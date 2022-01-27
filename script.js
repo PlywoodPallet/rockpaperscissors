@@ -1,4 +1,9 @@
-game();
+addButtonListeners();
+
+function addButtonListeners() {
+    
+}
+
 
 // randomly return Rock, Paper or Scissor as a string
 function computerPlay() {
@@ -39,10 +44,6 @@ function playRound(playerSelection, computerSelection) {
     // format input so its comparable with output of computerPlay() (First character capitalized, all other chars lowercase)
     playerSelection = capitalizeFirstChar(playerSelection);
 
-    // Accept input of "Scissor" instead of "Scissors". Change "Scissor" into "Scissors"
-    if (playerSelection == "Scissor")
-        playerSelection = "Scissors";
-
     // console.log("playerSelection:" + playerSelection + " computerSelection: " + computerSelection);
 
     switch(true) {
@@ -72,14 +73,14 @@ function capitalizeFirstChar(string) {
     return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
 }
 
-// play 5 games with the player
-// prompt the player for input
-function game() {
-    for (let i = 0; i < 5; i++) {
-        let roundNumber = i+1;
-        console.log("Round #" + (roundNumber) + ": " + playRound(playerInput(roundNumber), computerPlay()));
-    }
-}
+// // play 5 games with the player
+// // prompt the player for input
+// function game() {
+//     for (let i = 0; i < 5; i++) {
+//         let roundNumber = i+1;
+//         console.log("Round #" + (roundNumber) + ": " + playRound(playerInput(roundNumber), computerPlay()));
+//     }
+// }
 
 // prompt the user to enter rock, paper or scissors
 // keep prompting user until correct input is entered
