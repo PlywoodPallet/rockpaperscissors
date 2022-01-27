@@ -1,9 +1,31 @@
 addButtonListeners();
 
+
+// add an event listener to all game buttons (Rock, Paper, Scissor) which triggers playing one round of the game
 function addButtonListeners() {
-    
+
+    // select all buttons
+    const buttons = document.querySelectorAll('button');
+
+    // iterate through nodelist, add an event listener that plays the game based player choice of button.id
+    buttons.forEach((button) => {
+        button.addEventListener('click', () => {
+            var game = new Game();
+            game.playRound(button.id).displayResult();
+
+            //  console.log(game.playerWin + " Player: " + game.playerSelection + " Computer: " + game.computerSelection + " #:" + game.numGamesPlayed);
+        });
+    });
 }
 
+
+function Game() {
+    this.playerWin = ""; // 0 = lose, 1 = win, 2 = draw
+    this.playerSelection  = "";
+    this.computerSelection = "";
+
+    this.numGamesPlayed = 0;
+}
 
 // randomly return Rock, Paper or Scissor as a string
 function computerPlay() {
@@ -32,17 +54,28 @@ function computerPlay() {
     }
 }
 
+Game.prototype.displayResult = function () {
+    const gameMessages = document.querySelector("#gameMessages");
+    const result = document.createElement("div");
+    result.textContent = this.playerWin + " Player: " + this.playerSelection + " Computer: " + this.computerSelection + " #:" + this.numGamesPlayed;
 
+    gameMessages.prepend(result);
+
+    return this;
+}
 
 
 // play one round of the game, return a string that declares the winner of the game/results of the game
 // input: playerSelection case insensitive
+// use computerPlay() for the game to pick a play
 
 // Logic: Paper beats Rock, Scissor beats Paper, Rock beats Scissors. All other cases result in a tie
-function playRound(playerSelection, computerSelection) {
+Game.prototype.playRound = function (playerSelection) {
 
     // format input so its comparable with output of computerPlay() (First character capitalized, all other chars lowercase)
+    // unecessary as long as html is formatted correctly, but keeping it just in case inputs change in the future
     playerSelection = capitalizeFirstChar(playerSelection);
+    let computerSelection = computerPlay();
 
     // console.log("playerSelection:" + playerSelection + " computerSelection: " + computerSelection);
 
@@ -51,17 +84,29 @@ function playRound(playerSelection, computerSelection) {
         case(playerSelection == "Paper" && computerSelection == "Rock"):
         case(playerSelection == "Scissors" && computerSelection == "Paper"):
         case(playerSelection == "Rock" && computerSelection == "Scissors"):
-            return "You win! " + playerSelection + " beats " + computerSelection;
+            this.playerWin = 1;
+            this.playerSelection = playerSelection;
+            this.computerSelection = computerSelection;
+            this.numGamesPlayed = this.numGamesPlayed++;
+            return this;
 
         // all cases where player looses
         case(playerSelection == "Rock" && computerSelection == "Paper"):
         case(playerSelection == "Paper" && computerSelection == "Scissors"):
         case(playerSelection == "Scissors" && computerSelection == "Rock"):
-            return "You lose! " + computerSelection + " beats " + playerSelection;
+            this.playerWin = 0;
+            this.playerSelection = playerSelection;
+            this.computerSelection = computerSelection;
+            this.numGamesPlayed = this.numGamesPlayed++;
+            return this;
         
         // default case is a draw
         default:
-            return "Draw! " + playerSelection + " vs. " + computerSelection;
+            this.playerWin = 2;
+            this.playerSelection = playerSelection;
+            this.computerSelection = computerSelection;
+            this.numGamesPlayed = this.numGamesPlayed++;
+            return this;
 
     }
 
@@ -73,6 +118,7 @@ function capitalizeFirstChar(string) {
     return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
 }
 
+// DEPRECIATED
 // // play 5 games with the player
 // // prompt the player for input
 // function game() {
@@ -82,21 +128,22 @@ function capitalizeFirstChar(string) {
 //     }
 // }
 
+// DEPRECIATED
 // prompt the user to enter rock, paper or scissors
 // keep prompting user until correct input is entered
-function playerInput(roundNumber) {
-    let input;
-    while (true) {
-        input = window.prompt("Round #" + roundNumber + ": Rock, Paper or Scissors?")
+// function playerInput(roundNumber) {
+//     let input;
+//     while (true) {
+//         input = window.prompt("Round #" + roundNumber + ": Rock, Paper or Scissors?")
         
-        // format user input
-        input = capitalizeFirstChar(input);
+//         // format user input
+//         input = capitalizeFirstChar(input);
 
-        // Accept input of "Scissor" instead of "Scissors". Change "Scissor" into "Scissors"
-        if (input == "Scissor")
-            input = "Scissors";
+//         // Accept input of "Scissor" instead of "Scissors". Change "Scissor" into "Scissors"
+//         if (input == "Scissor")
+//             input = "Scissors";
 
-        if(input == "Rock" || input == "Paper" || input == "Scissors")
-            return input;
-    }
-}
+//         if(input == "Rock" || input == "Paper" || input == "Scissors")
+//             return input;
+//     }
+// }
