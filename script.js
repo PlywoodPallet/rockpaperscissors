@@ -1,3 +1,8 @@
+// need to find a more elegant way that avoids the use of global variables
+let numGamesPlayed = 0;
+let numPlayerWins = 0;
+let numComputerWins = 0;
+
 addButtonListeners();
 
 
@@ -7,24 +12,21 @@ function addButtonListeners() {
     // select all buttons
     const buttons = document.querySelectorAll('button');
 
+    const game = new Game();
     // iterate through nodelist, add an event listener that plays the game based player choice of button.id
     buttons.forEach((button) => {
         button.addEventListener('click', () => {
-            var game = new Game();
             game.playRound(button.id).displayResult();
 
-            //  console.log(game.playerWin + " Player: " + game.playerSelection + " Computer: " + game.computerSelection + " #:" + game.numGamesPlayed);
         });
     });
 }
 
 
 function Game() {
-    this.playerWin = ""; // 0 = lose, 1 = win, 2 = draw
+    this.playerWin = ""; // 0 = player lose, 1 = player win, 2 = draw
     this.playerSelection  = "";
     this.computerSelection = "";
-
-    this.numGamesPlayed = 0;
 }
 
 // randomly return Rock, Paper or Scissor as a string
@@ -55,14 +57,50 @@ function computerPlay() {
 }
 
 Game.prototype.displayResult = function () {
-    const gameMessages = document.querySelector("#gameMessages");
-    const result = document.createElement("div");
-    result.textContent = this.playerWin + " Player: " + this.playerSelection + " Computer: " + this.computerSelection + " #:" + this.numGamesPlayed;
+    
+    const scorekeeper = document.querySelector("#scorekeeper");
 
-    gameMessages.prepend(result);
+    // remove old score 
+    while(scorekeeper.firstChild) {
+        scorekeeper.removeChild(scorekeeper.firstChild);
+    }
+
+    // add new score
+    const score = document.createElement("div");
+    score.textContent = "Player: " + numPlayerWins + " Computer: " + numComputerWins;
+
+    const roundResult = document.querySelector("#roundResult");
+    const round = document.createElement("div");
+    
+
+    const gameWon = document.createElement("div");
+    if (numPlayerWins == 5)
+    {
+        gameWon.textContent = "Player wins! Game reset";
+        round.textContent = "Player wins! Game reset";
+        numGamesPlayed = 0;
+        numPlayerWins = 0;
+        numComputerWins = 0;
+        scorekeeper.prepend(gameWon);
+    } else if (numComputerWins == 5)
+    {
+        gameWon.textContent = "Computer wins! Game reset";
+        round.textContent = "Computer wins! Game reset";
+        numGamesPlayed = 0;
+        numPlayerWins = 0;
+        numComputerWins = 0;
+        scorekeeper.prepend(gameWon);
+    }
+    else {
+        round.textContent = "Player plays " + this.playerSelection + ". Computer plays " + this.computerSelection + ". Round#" + numGamesPlayed;
+    }
+
+    scorekeeper.append(score);
+    roundResult.prepend(round);
 
     return this;
 }
+
 
 
 // play one round of the game, return a string that declares the winner of the game/results of the game
@@ -85,9 +123,10 @@ Game.prototype.playRound = function (playerSelection) {
         case(playerSelection == "Scissors" && computerSelection == "Paper"):
         case(playerSelection == "Rock" && computerSelection == "Scissors"):
             this.playerWin = 1;
+            numPlayerWins++;
             this.playerSelection = playerSelection;
             this.computerSelection = computerSelection;
-            this.numGamesPlayed = this.numGamesPlayed++;
+            numGamesPlayed++;
             return this;
 
         // all cases where player looses
@@ -95,9 +134,10 @@ Game.prototype.playRound = function (playerSelection) {
         case(playerSelection == "Paper" && computerSelection == "Scissors"):
         case(playerSelection == "Scissors" && computerSelection == "Rock"):
             this.playerWin = 0;
+            numComputerWins++;
             this.playerSelection = playerSelection;
             this.computerSelection = computerSelection;
-            this.numGamesPlayed = this.numGamesPlayed++;
+            numGamesPlayed++;
             return this;
         
         // default case is a draw
@@ -105,7 +145,7 @@ Game.prototype.playRound = function (playerSelection) {
             this.playerWin = 2;
             this.playerSelection = playerSelection;
             this.computerSelection = computerSelection;
-            this.numGamesPlayed = this.numGamesPlayed++;
+            numGamesPlayed++;
             return this;
 
     }
@@ -117,33 +157,3 @@ Game.prototype.playRound = function (playerSelection) {
 function capitalizeFirstChar(string) {
     return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
 }
-
-// DEPRECIATED
-// // play 5 games with the player
-// // prompt the player for input
-// function game() {
-//     for (let i = 0; i < 5; i++) {
-//         let roundNumber = i+1;
-//         console.log("Round #" + (roundNumber) + ": " + playRound(playerInput(roundNumber), computerPlay()));
-//     }
-// }
-
-// DEPRECIATED
-// prompt the user to enter rock, paper or scissors
-// keep prompting user until correct input is entered
-// function playerInput(roundNumber) {
-//     let input;
-//     while (true) {
-//         input = window.prompt("Round #" + roundNumber + ": Rock, Paper or Scissors?")
-        
-//         // format user input
-//         input = capitalizeFirstChar(input);
-
-//         // Accept input of "Scissor" instead of "Scissors". Change "Scissor" into "Scissors"
-//         if (input == "Scissor")
-//             input = "Scissors";
-
-//         if(input == "Rock" || input == "Paper" || input == "Scissors")
-//             return input;
-//     }
-// }
